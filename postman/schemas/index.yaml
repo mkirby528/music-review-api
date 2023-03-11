@@ -1,0 +1,99 @@
+openapi: "3.0.0"
+info:
+    version: "1.0.0"
+    title: "Music Review API"
+    description: Review Music
+
+servers:
+    - url: https://zjixv0m4di.execute-api.us-east-1.amazonaws.com/non-prod
+
+paths:
+    /albums:
+        get:
+            summary: Get all albums
+            responses:
+                "200":
+                    description: Returns all all albums that have been reviewed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AlbumResponseBody"
+                500:
+                    description: Unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+        post:
+            summary: Get all albums
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AlbumRequestBody"
+            responses:
+                "201":
+                    description: Created
+components:
+    schemas:
+        AlbumRequestBody:
+            type: object
+            required:
+                - Title
+                - Artist
+                - Rating
+            properties:
+                id: 
+                    type: string
+                Title:
+                    type: string
+                Artist:
+                    type: string
+                Rating:
+                    type: integer
+                Type:
+                    type: string
+                    enum: ["ALBUM", "SONG"]
+                DateListened:
+                    type: string
+                HaveViny:
+                    type: boolean
+                Images:
+                    $ref: "#/components/schemas/ImagesObject"
+        AlbumResponseBody:
+            type: object
+            properties:
+                Title:
+                    type: string
+                Artist:
+                    type: string
+                Rating:
+                    type: integer
+                Type:
+                    type: string
+                    enum: ["ALBUM", "SONG"]
+                DateListened:
+                    type: string
+                HaveViny:
+                    type: boolean
+
+        ImagesObject:
+            description: Object containing images for the album
+            type: object
+            properties:
+                sm:
+                    type: string
+                md:
+                    type: string
+                lg:
+                    type: string
+
+        Error:
+            type: object
+            required:
+                - message
+            properties:
+                message:
+                    description: A human readable error message
+                    type: string
