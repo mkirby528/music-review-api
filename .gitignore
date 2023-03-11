@@ -1,0 +1,13 @@
+# Pip installed dependecnies 
+package
+
+#secrets
+.env
+.cache
+
+#deployment packages 
+*.zip
+
+__pycache__/
+.vscode
+.vscode/*
