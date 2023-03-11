@@ -52,7 +52,26 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/AlbumRequestBody"
+                            $ref: "#/components/schemas/AlbumCreationRequestBody"
+            responses:
+                "201":
+                    description: Created
+    /albums/{albumId}:
+        patch:
+            summary: Update album review
+            parameters:
+                - in: path
+                  name: albumId
+                  required: true
+                  schema:
+                      type: string
+
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AlbumCreationRequestBody"
             responses:
                 "201":
                     description: Created
@@ -85,7 +104,7 @@ components:
                 Images:
                     $ref: "#/components/schemas/ImagesObject"
 
-        AlbumRequestBody:
+        AlbumCreationRequestBody:
             type: object
             required:
                 - Title
@@ -108,6 +127,30 @@ components:
                 HaveViny:
                     type: boolean
 
+        AlbumUpdateRequestBody:
+            type: object
+            properties:
+                Title:
+                    type: string
+                Artist:
+                    type: string
+                Rating:
+                    type: integer
+                    minimum: 0
+                    maximum: 10
+                Type:
+                    type: string
+                    enum: ["ALBUM", "SONG"]
+                DateListened:
+                    type: string
+                DateReleased:
+                    type: string
+                HaveViny:
+                    type: boolean
+                SpotifyURI:
+                    type: string
+                Images:
+                    $ref: "#/components/schemas/ImagesObject"
         ImagesObject:
             description: Object containing images for the album
             type: object
