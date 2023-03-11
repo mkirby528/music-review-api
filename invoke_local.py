@@ -1,5 +1,5 @@
 import json
-from main import lambda_handler
+from src.main import lambda_handler
 # from events.post import event
 # from events.get import event
 from events.getAllAlbums import event

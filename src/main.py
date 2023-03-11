@@ -2,11 +2,14 @@ import simplejson as json
 import boto3
 import os
 import spotipy
+import src.constants as constants
 from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 from datetime import date
 from datetime import datetime
 from boto3.dynamodb.conditions import Key
+from src.utils.response_utils import format_response
+
 
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
@@ -14,24 +17,29 @@ if os.getenv("TABLE_NAME") is None:
 
 auth_manager = SpotifyClientCredentials()
 spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
+dynamodb_resource = boto3.resource("dynamodb")
+TABLE_NAME = os.environ["TABLE_NAME"]
+table = dynamodb_resource.Table(TABLE_NAME)
 
 
 def lambda_handler(event, context):
-    dynamodb_resource = boto3.resource("dynamodb")
-    TABLE_NAME = os.environ["TABLE_NAME"]
-    table = dynamodb_resource.Table(TABLE_NAME)
-
+    print(constants.ALBUM_REGEX_PATH)
+    print(f"Recieved event: \n {event}")
+    path = event.get('path', '')
+    path_paramaters = event.get("pathParameters", '')
     method = event.get('httpMethod', '').upper()
     headers = event.get('headers', {})
-    query_params = event.get('queryStringParameters', {})
+    query_params = event.get('queryStringParameters')
+    if not query_params:
+        query_params = {}
+    print(f'Method: {method}')
+    print(f"Path: {path}")
+    print(f"Path Parameters: {path_paramaters}")
     print(f"Headers: {headers}")
     print(f"Query Paramaters: {query_params}")
+
     if method == "GET":
-        response = None
-        if not "Title" in query_params:
-            response = get_all_albums(table, query_params)
-        else:
-            response = get_album(table, query_params)
+        response = get_all_albums(query_params)
         if not response:
             return format_response(404)
         return format_response(200, response)
@@ -39,7 +47,7 @@ def lambda_handler(event, context):
     if method == "POST":
         body = event.get('body', {})
         album_item = json.loads(body)
-        dynamo_response = create_album_record(table, album_item)
+        dynamo_response = create_album_record(album_item)
         return format_response(201, dynamo_response)
 
     if method == "DELETE":
@@ -49,14 +57,7 @@ def lambda_handler(event, context):
         print("PATCH request")
 
 
-def format_response(status_code, response_body={}):
-    return {
-        'statusCode': status_code,
-        'body': json.dumps(response_body)
-    }
-
-
-def create_album_record(table, album):
+def create_album_record(album):
     title = album["Title"]
     artist = album["Artist"]
     album["Type"] = "ALBUM"
@@ -66,10 +67,10 @@ def create_album_record(table, album):
     return (response)
 
 
-def get_all_albums(table, query_params):
+def get_all_albums(query_params):
     albums = table.scan()["Items"]
     sort_key = query_params.get("sort_key", "Title")
-    sort_order = query_params.get("sort_order", "")
+    sort_order = query_params.get("sort_order", "asc")
     is_descending = False
     if sort_key not in ("Title", "Rating", "Artist", "DateListened", "ReleaseDate"):
         return False
@@ -78,7 +79,7 @@ def get_all_albums(table, query_params):
     return sorted(albums, key=lambda d: d[sort_key], reverse=is_descending)
 
 
-def get_album(table, query_params):
+def get_album(query_params):
     if query_params and "Title" in query_params:
         title = query_params["Title"]
         response = table.query(KeyConditionExpression=Key('Title').eq(title))
@@ -107,9 +108,10 @@ def add_album_metadata(album, title, artist):
     else:
         album["ReleaseDate"] = spotify_album["release_date"]
     album["SpotifyURI"] = spotify_album["external_urls"]["spotify"]
-    album["ImageLarge"] = spotify_album["images"][0]["url"]
-    album["ImageMedium"] = spotify_album["images"][1]["url"]
-    album["ImageSmall"] = spotify_album["images"][2]["url"]
+    album["Images"] = {}
+    album["Images"]["lg"] = spotify_album["images"][0]["url"]
+    album["Images"]["md"] = spotify_album["images"][1]["url"]
+    album["Images"]["sm"] = spotify_album["images"][2]["url"]
     album["NumberOfTracks"] = spotify_album["total_tracks"]
     if not "DateListened" in album:
         album["DateListened"] = date.today().strftime("%m/%d/%Y")
