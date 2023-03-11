@@ -1,4 +1,5 @@
 import simplejson as json
+import re
 import boto3
 import os
 import spotipy
@@ -23,13 +24,14 @@ table = dynamodb_resource.Table(TABLE_NAME)
 
 
 def lambda_handler(event, context):
-    print(constants.ALBUM_REGEX_PATH)
-    print(f"Recieved event: \n {event}")
+    # Read and process request elements
     path = event.get('path', '')
-    path_paramaters = event.get("pathParameters", '')
+    path_paramaters = event.get("pathParameters", {})
     method = event.get('httpMethod', '').upper()
     headers = event.get('headers', {})
     query_params = event.get('queryStringParameters')
+    body = event.get('body', {})
+
     if not query_params:
         query_params = {}
     print(f'Method: {method}')
@@ -37,6 +39,7 @@ def lambda_handler(event, context):
     print(f"Path Parameters: {path_paramaters}")
     print(f"Headers: {headers}")
     print(f"Query Paramaters: {query_params}")
+    print(f"Body: {body}")
 
     if method == "GET":
         response = get_all_albums(query_params)
@@ -45,7 +48,6 @@ def lambda_handler(event, context):
         return format_response(200, response)
 
     if method == "POST":
-        body = event.get('body', {})
         album_item = json.loads(body)
         dynamo_response = create_album_record(album_item)
         return format_response(201, dynamo_response)
@@ -54,7 +56,22 @@ def lambda_handler(event, context):
         print("DELETE request")
 
     if method == "PATCH":
-        print("PATCH request")
+        album_id = path_paramaters.get("albumID", "")
+        if not album_id:
+            return (400, "No albumID provided.")
+        if bool(re.search(constants.ADD_VINYL_REGEX, path)):
+            return format_response(200, addVinylRecord(album_id))
+        else:
+            update_fields = json.loads(body)
+            album = update_album(album_id, update_fields)
+
+            return format_response(200, album)
+
+
+def addVinylRecord(album_id):
+    album = update_album(album_id, {"HaveVinyl": True})
+    if album:
+        return True
 
 
 def create_album_record(album):
@@ -65,6 +82,33 @@ def create_album_record(album):
     print(album)
     response = table.put_item(Item=album)
     return (response)
+
+
+def update_album(album_id, fields_to_update):
+    album = table.query(KeyConditionExpression=Key(
+        'id').eq(album_id))["Items"][0]
+    print(f"Updating album `{album['Title']}`... ")
+    print(f"Fields to update: {fields_to_update}")
+    update_expressions = []
+    expression_attribute_values = {}
+    count = 0
+    for field, value in fields_to_update.items():
+        if field not in album:
+            print(f"Field `{field}` not present on original object")
+            return False
+        update_expressions.append(f'{field}= :var{count}')
+        expression_attribute_values[f":var{count}"] = value
+        count += 1
+    print(", ".join(update_expressions))
+    print(expression_attribute_values)
+    return table.update_item(
+        Key={
+            'id': album_id
+        },
+        UpdateExpression="SET " + ",".join(update_expressions),
+        ExpressionAttributeValues=expression_attribute_values,
+        ReturnValues="ALL_NEW"
+    )
 
 
 def get_all_albums(query_params):
