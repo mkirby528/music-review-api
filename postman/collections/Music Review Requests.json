@@ -1,0 +1,223 @@
+{
+	"info": {
+		"_postman_id": "98293ced-16bc-40a8-8e12-64536cc7d5aa",
+		"name": "Music Review Requests",
+		"description": "Review Music",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "21873363-98293ced-16bc-40a8-8e12-64536cc7d5aa"
+	},
+	"item": [
+		{
+			"name": "albums",
+			"item": [
+				{
+					"name": "Get all albums",
+					"id": "4c601eb0-c739-4172-852b-f83283904596",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/albums?sort_key=Title&sort_order=asc&limit=92179214",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"albums"
+							],
+							"query": [
+								{
+									"key": "sort_key",
+									"value": "Title"
+								},
+								{
+									"key": "sort_order",
+									"value": "asc"
+								},
+								{
+									"key": "limit",
+									"value": "92179214"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "51d6d4cf-bbaf-4b9a-a032-c344b8cf6d2d",
+							"name": "Returns all all albums that have been reviewed",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/albums?sort_key=Title&sort_order=asc&limit=92179214",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"albums"
+									],
+									"query": [
+										{
+											"key": "sort_key",
+											"value": "Title"
+										},
+										{
+											"key": "sort_order",
+											"value": "asc"
+										},
+										{
+											"key": "limit",
+											"value": "92179214"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"laboris in\",\n  \"Title\": \"incididunt labore ex sed\",\n  \"Artist\": \"ea irure velit\",\n  \"Rating\": 4,\n  \"Type\": \"SONG\",\n  \"DateListened\": \"ut cillum magna est\",\n  \"DateReleased\": \"dolore ut Excepteur quis\",\n  \"HaveViny\": true,\n  \"SpotifyURI\": \"exercitation nisi\",\n  \"Images\": {\n    \"sm\": \"magna Duis sunt Lorem\",\n    \"md\": \"consectetur in\",\n    \"lg\": \"ut elit nisi in ea\"\n  }\n}"
+						},
+						{
+							"id": "5f3bce65-5fd5-491c-af96-5af96e244d95",
+							"name": "Unexpected error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/albums?sort_key=Title&sort_order=asc&limit=92179214",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"albums"
+									],
+									"query": [
+										{
+											"key": "sort_key",
+											"value": "Title"
+										},
+										{
+											"key": "sort_order",
+											"value": "asc"
+										},
+										{
+											"key": "limit",
+											"value": "92179214"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"pariatur nisi nostrud id\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Add an album review",
+					"id": "596ed5e8-4137-420c-9ede-8e00964dae1e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Title\": \"ullamco enim dolor\",\n  \"Artist\": \"ea laboris\",\n  \"Rating\": 1,\n  \"Type\": \"SONG\",\n  \"DateListened\": \"sint nulla fugiat voluptate\",\n  \"HaveViny\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/albums",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "c2fa790a-402a-4630-82a0-ff592266be44",
+							"name": "Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Title\": \"ullamco enim dolor\",\n  \"Artist\": \"ea laboris\",\n  \"Rating\": 1,\n  \"Type\": \"SONG\",\n  \"DateListened\": \"sint nulla fugiat voluptate\",\n  \"HaveViny\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/albums",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"albums"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			],
+			"id": "57b48fb6-b576-49b6-aac6-152b25298be8"
+		}
+	],
+	"variable": [
+		{
+			"id": "dd69546c-70b9-477c-affe-3744452cbb38",
+			"key": "baseUrl",
+			"value": "https://zjixv0m4di.execute-api.us-east-1.amazonaws.com/non-prod",
+			"type": "string"
+		}
+	]
+}

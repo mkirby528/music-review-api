@@ -11,6 +11,27 @@ paths:
     /albums:
         get:
             summary: Get all albums
+            parameters:
+                - in: query
+                  name: sort_key
+                  required: false
+                  schema:
+                      type: string
+                      enum: [Rating, Title, Artist]
+                      default: Title
+                - in: query
+                  name: sort_order
+                  required: false
+                  schema:
+                      type: string
+                      enum: [asc, ascending, desc, descending]
+                      default: asc
+                - in: query
+                  name: limit
+                  required: false
+                  schema:
+                      type: integer
+                      minimum: 1
             responses:
                 "200":
                     description: Returns all all albums that have been reviewed
@@ -25,7 +46,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/Error"
         post:
-            summary: Get all albums
+            summary: Add an album review
             requestBody:
                 required: true
                 content:
@@ -37,6 +58,33 @@ paths:
                     description: Created
 components:
     schemas:
+        AlbumResponseBody:
+            type: object
+            properties:
+                id:
+                    type: string
+                Title:
+                    type: string
+                Artist:
+                    type: string
+                Rating:
+                    type: integer
+                    minimum: 0
+                    maximum: 10
+                Type:
+                    type: string
+                    enum: ["ALBUM", "SONG"]
+                DateListened:
+                    type: string
+                DateReleased:
+                    type: string
+                HaveViny:
+                    type: boolean
+                SpotifyURI:
+                    type: string
+                Images:
+                    $ref: "#/components/schemas/ImagesObject"
+
         AlbumRequestBody:
             type: object
             required:
@@ -44,32 +92,14 @@ components:
                 - Artist
                 - Rating
             properties:
-                id: 
-                    type: string
                 Title:
                     type: string
                 Artist:
                     type: string
                 Rating:
                     type: integer
-                Type:
-                    type: string
-                    enum: ["ALBUM", "SONG"]
-                DateListened:
-                    type: string
-                HaveViny:
-                    type: boolean
-                Images:
-                    $ref: "#/components/schemas/ImagesObject"
-        AlbumResponseBody:
-            type: object
-            properties:
-                Title:
-                    type: string
-                Artist:
-                    type: string
-                Rating:
-                    type: integer
+                    minimum: 0
+                    maximum: 10
                 Type:
                     type: string
                     enum: ["ALBUM", "SONG"]

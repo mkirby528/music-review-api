@@ -5,6 +5,7 @@ id = 52d78811-495f-4605-a15e-0cf4817af49b
 
 [relations.collections]
 rootDirectory = postman/collections
+files[] = {"id":"21873363-98293ced-16bc-40a8-8e12-64536cc7d5aa","path":"Music Review Requests.json","metaData":{}}
 
 [relations.collections.metaData]
 
