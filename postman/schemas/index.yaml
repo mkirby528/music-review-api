@@ -38,7 +38,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/AlbumResponseBody"
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/AlbumResponseBody"
+                                    
                 500:
                     description: Unexpected error
                     content:
@@ -57,8 +60,26 @@ paths:
                 "201":
                     description: Created
     /albums/{albumId}:
+        get:
+            summary: Get album  
+            parameters:
+                - in: path
+                  name: albumId
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Retrieved Album
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AlbumResponseBody"
+                "404":
+                    description: Album Not Found
+
         patch:
-            summary: Update album review
+            summary: Update album 
             parameters:
                 - in: path
                   name: albumId
@@ -73,8 +94,37 @@ paths:
                         schema:
                             $ref: "#/components/schemas/AlbumCreationRequestBody"
             responses:
+                "200":
+                    description: Updated
+        delete:
+            summary: Delete album 
+            parameters:
+                - in: path
+                  name: albumId
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Deleted
+            
+
+    /albums/{albumId}/addVinyl:
+        patch:
+            summary:  Add Vinyl 
+            parameters:
+                - in: path
+                  name: albumId
+                  required: true
+                  schema:
+                    type: string
+            responses:
                 "201":
                     description: Created
+                "404": 
+                    description: Album not Found
+
+
 components:
     schemas:
         AlbumResponseBody:
