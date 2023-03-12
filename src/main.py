@@ -42,7 +42,12 @@ def lambda_handler(event, context):
     print(f"Body: {body}")
 
     if method == "GET":
-        response = get_all_albums(query_params)
+        response = None
+        if path_paramaters and path_paramaters["albumID"]:
+            album_id = path_paramaters.get("albumID", "")
+            response = get_album(album_id)
+        else:
+            response = get_all_albums(query_params)
         if not response:
             return format_response(404)
         return format_response(200, response)
@@ -52,20 +57,19 @@ def lambda_handler(event, context):
         dynamo_response = create_album_record(album_item)
         return format_response(201, dynamo_response)
 
-    if method == "DELETE":
-        print("DELETE request")
-
     if method == "PATCH":
         album_id = path_paramaters.get("albumID", "")
         if not album_id:
             return (400, "No albumID provided.")
-        if bool(re.search(constants.ADD_VINYL_REGEX, path)):
+        if bool(re.search(constants.ADD_VINYL_PATH_REGEX, path)):
             return format_response(200, addVinylRecord(album_id))
         else:
             update_fields = json.loads(body)
             album = update_album(album_id, update_fields)
 
             return format_response(200, album)
+    if method == "DELETE":
+        print("DELETE request")
 
 
 def addVinylRecord(album_id):
@@ -123,14 +127,13 @@ def get_all_albums(query_params):
     return sorted(albums, key=lambda d: d[sort_key], reverse=is_descending)
 
 
-def get_album(query_params):
-    if query_params and "Title" in query_params:
-        title = query_params["Title"]
-        response = table.query(KeyConditionExpression=Key('Title').eq(title))
-        items = response["Items"]
-        if not items:
-            return None
-        return items[0]
+def get_album(album_id):
+    print(f"Getting album... \n id: {album_id}")
+    response = table.query(KeyConditionExpression=Key('id').eq(album_id))
+    items = response["Items"]
+    if not items:
+        return None
+    return items[0]
 
 
 def add_album_metadata(album, title, artist):
