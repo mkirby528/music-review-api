@@ -69,7 +69,15 @@ def lambda_handler(event, context):
 
             return format_response(200, album)
     if method == "DELETE":
-        print("DELETE request")
+        album_id = path_paramaters.get("albumID", "")
+        if not album_id:
+            return (400, "No albumID provided.")
+        response = table.delete_item(
+            Key={
+                'id': album_id
+            }
+        )
+        return format_response(200, response)
 
 
 def addVinylRecord(album_id):
