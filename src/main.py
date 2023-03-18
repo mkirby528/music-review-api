@@ -132,6 +132,8 @@ def get_all_albums(query_params):
         return False
     if sort_order.lower() in ("desc", "descending"):
         is_descending = True
+    if sort_key == "Rating":
+        return sorted(albums, key=lambda d: int(d[sort_key]), reverse=is_descending)
     return sorted(albums, key=lambda d: d[sort_key], reverse=is_descending)
 
 
