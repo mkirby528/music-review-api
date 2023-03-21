@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: build and deploy
         run: |
-          chmod +x ./.github/scripts/buildAndDeploy.sh ./.github/scripts/buildDeploymentPackage.sh ./.github/scripts/deployLambda.sh 
+          chmod +x ./.github/scripts/buildAndDeploy.sh ./.github/scripts/deployLambda.sh ./.github/scripts/buildDeploymentPackage.sh
           ./.github/scripts/buildAndDeploy.sh
         shell: bash
         env:
