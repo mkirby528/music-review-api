@@ -92,8 +92,8 @@ def create_album_record(album):
     album["Type"] = "ALBUM"
     album = add_album_metadata(album, title, artist)
     print(album)
-    response = table.put_item(Item=album, ReturnValues="ALL_NEW")
-    return (response)
+    response = table.put_item(Item=album)
+    return album
 
 
 def update_album(album_id, fields_to_update):
