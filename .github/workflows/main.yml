@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      []- uses: actions/checkout@v2
       - name: build and deploy
-        uses: actions/checkout@v2
         run: |
           chmod +x ./.github/scripts/buildAndDeploy.sh ./.github/scripts/deployLambda.sh ./.github/scripts/buildDeploymentPackage.sh
           ./.github/scripts/buildAndDeploy.sh
