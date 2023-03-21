@@ -12,7 +12,7 @@ jobs:
     - name: Deploy code to Lambda
       uses: mariamrf/py-lambda-action@v1.0.0
       with:
-        lambda_layer_arn: 'arn:aws:lambda:us-east-1:794553525198:layer:music-review-api-dependencies'
+        lambda_layer_arn: 'music-review-api-dependencies'
         lambda_function_name: 'music-review-api'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
