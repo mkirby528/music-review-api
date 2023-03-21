@@ -1,2 +1,2 @@
 #!/bin/bash
-./scripts/buildDeploymentPackage.sh && ./scripts/deployLambda.sh
+./buildDeploymentPackage.sh && ./deployLambda.sh
