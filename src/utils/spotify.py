@@ -26,6 +26,8 @@ def _add_metadata_from_spotify(spotipy_client, album, id):
         artists.append(artist["name"])
     del album["Artist"]
     album["Artists"] = artists
+    album["ArtistsString"] = ", ".join(album["Artists"])
+
     album["SpotifyURI"] = spotify_album["external_urls"]["spotify"]
     album["Images"] = {}
     album["Images"]["lg"] = spotify_album["images"][0]["url"]
