@@ -15,7 +15,7 @@ if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
 
 
-auth_manager = SpotifyClientCredentials()
+auth_manager = SpotifyClientCredentials(cache_path="/tmp/.cache")
 spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
 dynamodb_resource = boto3.resource("dynamodb")
 TABLE_NAME = os.environ["TABLE_NAME"]
@@ -54,6 +54,9 @@ def lambda_handler(event, context):
     if method == "POST":
         album_item = json.loads(body)
         album_object = build_album_object(spotify, album_item)
+        print("================")
+        print(album_object)
+        print("================")
         response = table.put_item(Item=album_object)
         return format_response(201, response)
 

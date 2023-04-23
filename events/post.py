@@ -7,7 +7,7 @@ event = {
     "headers": {},
     "queryStringParameters": {},
     "requestContext": {},
-    "body": "{\"Title\": \"Rage against the machine     \", \"Artist\": \"Rage against the machine    \", \"Rating\": 8}",
+    "body": "{\"Title\": \"Mr. Morale & the Big Steppers\", \"Artist\": \"Kendrick Lamar\", \"Rating\": 8}",
     "pathParameters": {},
     "httpMethod": "POST",
     "isBase64Encoded": False,

@@ -9,6 +9,7 @@ def build_album_object(spotipy_client, album):
     query_string = f"{title} artist:{artist}"
     results = spotipy_client.search(
         q=query_string, type='album')
+    print(results)
     album_id = results["albums"]["items"][0]["id"]
     album = _add_metadata_from_spotify(spotipy_client, album, album_id)
     album["Tracks"] = _get_album_tracks(spotipy_client, album_id)
