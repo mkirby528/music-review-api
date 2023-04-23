@@ -3,7 +3,7 @@ package
 
 #secrets
 .env
-.cache
+
 
 #deployment packages 
 *.zip
