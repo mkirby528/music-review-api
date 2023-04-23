@@ -12,7 +12,7 @@ def build_album_object(spotipy_client, album):
     album_id = results["albums"]["items"][0]["id"]
     album = _add_metadata_from_spotify(spotipy_client, album, album_id)
     album["Tracks"] = _get_album_tracks(spotipy_client, album_id)
-    print(json.dumps(album, indent=2))
+    return album
 
 
 def _add_metadata_from_spotify(spotipy_client, album, id):
@@ -40,6 +40,7 @@ def _add_metadata_from_spotify(spotipy_client, album, id):
     if not "HaveVinyl" in album:
         album["HaveVinyl"] = False
     album["Type"] = "ALBUM"
+    album["Tracks"] = _get_album_tracks(spotipy_client, album["id"])
     return (album)
 
 

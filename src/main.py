@@ -10,8 +10,7 @@ from datetime import date
 from datetime import datetime
 from boto3.dynamodb.conditions import Key
 from src.utils.response_utils import format_response
-
-
+from src.utils.spotify import build_album_object
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
 
@@ -54,8 +53,9 @@ def lambda_handler(event, context):
 
     if method == "POST":
         album_item = json.loads(body)
-        dynamo_response = create_album_record(album_item)
-        return format_response(201, dynamo_response)
+        album_object = build_album_object(spotify, album_item)
+        response = table.put_item(Item=album_object)
+        return format_response(201, response)
 
     if method == "PATCH":
         album_id = path_paramaters.get("albumID", "")
@@ -91,8 +91,7 @@ def create_album_record(album):
     artist = album["Artist"]
     album["Type"] = "ALBUM"
     album = add_album_metadata(album, title, artist)
-    print(album)
-    response = table.put_item(Item=album)
+    #
     return album
 
 
@@ -111,8 +110,6 @@ def update_album(album_id, fields_to_update):
         update_expressions.append(f'{field}= :var{count}')
         expression_attribute_values[f":var{count}"] = value
         count += 1
-    print(", ".join(update_expressions))
-    print(expression_attribute_values)
     return table.update_item(
         Key={
             'id': album_id
@@ -138,40 +135,9 @@ def get_all_albums(query_params):
 
 
 def get_album(album_id):
-    print(f"Getting album... \n id: {album_id}")
+    print(f"Getting album...  id: {album_id}")
     response = table.query(KeyConditionExpression=Key('id').eq(album_id))
     items = response["Items"]
     if not items:
         return None
     return items[0]
-
-
-def add_album_metadata(album, title, artist):
-    query_string = f"{title} artist:{artist}"
-    print(query_string)
-    results = spotify.search(
-        q=query_string, type='album')
-    print(results)
-    if len(results['albums']['items']) == 0:
-        query_string = f"{title}"
-        results = spotify.search(
-            q=query_string, type='album')
-    seach_result = results['albums']['items'][0]
-    spotify_album = spotify.album(seach_result["id"])
-    album["id"] = spotify_album["id"]
-    if spotify_album["release_date_precision"] == "day":
-        album["ReleaseDate"] = datetime.strptime(
-            spotify_album["release_date"], '%Y-%m-%d').strftime('%m/%d/%Y')
-    else:
-        album["ReleaseDate"] = spotify_album["release_date"]
-    album["SpotifyURI"] = spotify_album["external_urls"]["spotify"]
-    album["Images"] = {}
-    album["Images"]["lg"] = spotify_album["images"][0]["url"]
-    album["Images"]["md"] = spotify_album["images"][1]["url"]
-    album["Images"]["sm"] = spotify_album["images"][2]["url"]
-    album["NumberOfTracks"] = spotify_album["total_tracks"]
-    if not "DateListened" in album:
-        album["DateListened"] = date.today().strftime("%m/%d/%Y")
-    if not "HaveVinyl" in album:
-        album["HaveVinyl"] = False
-    return album
