@@ -15,7 +15,7 @@ if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
 
 
-auth_manager = SpotifyClientCredentials(cache_path="/tmp/.cache")
+auth_manager = SpotifyClientCredentials()
 spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
 dynamodb_resource = boto3.resource("dynamodb")
 TABLE_NAME = os.environ["TABLE_NAME"]
