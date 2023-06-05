@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from src.utils.response_utils import format_response
 from src.utils.spotify import build_album_object
 from src.albums.get_albums import get_review_by_id, get_all_reviews
+from src.albums.search_spotify import search_album_by_spotify_id
 import src.constants as constants
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
@@ -39,25 +40,33 @@ def lambda_handler(event, context):
     print(f"Query Paramaters: {query_params}")
     print(f"Body: {body}")
 
+    # /albums
     if method == "GET" and re.fullmatch(constants.GET_ALL_ALBUMS_PATH_REGEX, path):
         print("Getting all album reviews")
         response = get_all_reviews(table, query_params)
         return format_response(200, response)
+    # /albums/:albumId
     if method == "GET" and re.fullmatch(constants.GET_ALBUM_BY_ID_PATH_REGEX, path):
-            print("Getting album review by album id")
-            album_id = path_paramaters.get("albumID", "")
-            if not album_id: 
-                return format_response(404, {})
-            response = get_review_by_id(table, album_id)
-            return format_response(200, response)
-    
+        album_id = path_paramaters.get("albumID", "")
+        if not album_id:
+            return format_response(404, {})
+        response = get_review_by_id(table, album_id)
+        return format_response(200, response)
+     # /albums/spotfiy/search
+    if method == "GET" and re.fullmatch(constants.SPOTIFY_SEARCH_PATH_REGEX, path):
+        title = query_params.get("Title", "").strip()
+        artist = query_params.get("Artist", "").strip()
+
+        response = search_album_by_spotify_id(spotify, title, artist)
+        return format_response(200, response)
+
     if method == "POST":
         album_item = json.loads(body)
         album_object = build_album_object(spotify, album_item)
         print("================")
         print(album_object)
         print("================")
-        response = table.put_item(Item=album_object)
+        # response = table.put_item(Item=album_object)
         return format_response(201, response)
 
     if method == "PATCH":
@@ -121,8 +130,3 @@ def update_album(album_id, fields_to_update):
         ExpressionAttributeValues=expression_attribute_values,
         ReturnValues="ALL_NEW"
     )
-
-
-  
-
-
