@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from src.utils.response_utils import format_response
 from src.utils.spotify import build_album_object
 from src.albums.get_albums import get_review_by_id, get_all_reviews
-from src.albums.search_spotify import search_album_by_spotify_id
+from src.albums.search_spotify import search_album, search_album_by_spotify_id
 import src.constants as constants
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
@@ -56,8 +56,7 @@ def lambda_handler(event, context):
     if method == "GET" and re.fullmatch(constants.SPOTIFY_SEARCH_PATH_REGEX, path):
         title = query_params.get("Title", "").strip()
         artist = query_params.get("Artist", "").strip()
-
-        response = search_album_by_spotify_id(spotify, title, artist)
+        response = search_album(spotify, title, artist)
         return format_response(200, response)
 
     if method == "POST":

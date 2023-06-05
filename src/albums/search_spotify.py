@@ -1,4 +1,4 @@
-def search_album_by_spotify_id(spotipy_client, title, artist):
+def search_album(spotipy_client, title, artist):
     print(f"Searching spotify with Title `{title}` and artist `{artist}`")
     query_string = f"{title} artist:{artist}"
     print(query_string)
