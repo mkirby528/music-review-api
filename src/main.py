@@ -65,7 +65,7 @@ def lambda_handler(event, context):
         print("================")
         print(album_object)
         print("================")
-        # response = table.put_item(Item=album_object)
+        response = table.put_item(Item=album_object)
         return format_response(201, response)
 
     if method == "PATCH":
