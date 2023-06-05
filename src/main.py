@@ -8,9 +8,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 from datetime import date
 from datetime import datetime
-from boto3.dynamodb.conditions import Key
 from src.utils.response_utils import format_response
 from src.utils.spotify import build_album_object
+from src.reviews.get_reviews import get_review_by_id, get_all_reviews
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
 
@@ -44,9 +44,9 @@ def lambda_handler(event, context):
         response = None
         if path_paramaters and path_paramaters["albumID"]:
             album_id = path_paramaters.get("albumID", "")
-            response = get_album(album_id)
+            response = get_review_by_id(table, album_id)
         else:
-            response = get_all_albums(query_params)
+            response = get_all_reviews(table, query_params)
         if not response:
             return format_response(404)
         return format_response(200, response)
@@ -123,24 +123,6 @@ def update_album(album_id, fields_to_update):
     )
 
 
-def get_all_albums(query_params):
-    albums = table.scan()["Items"]
-    sort_key = query_params.get("sort_key", "Title")
-    sort_order = query_params.get("sort_order", "asc")
-    is_descending = False
-    if sort_key not in ("Title", "Rating", "Artist", "DateListened", "ReleaseDate"):
-        return False
-    if sort_order.lower() in ("desc", "descending"):
-        is_descending = True
-    if sort_key == "Rating":
-        return sorted(albums, key=lambda d: int(d[sort_key]), reverse=is_descending)
-    return sorted(albums, key=lambda d: d[sort_key], reverse=is_descending)
+  
 
 
-def get_album(album_id):
-    print(f"Getting album...  id: {album_id}")
-    response = table.query(KeyConditionExpression=Key('id').eq(album_id))
-    items = response["Items"]
-    if not items:
-        return None
-    return items[0]
