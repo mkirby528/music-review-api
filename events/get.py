@@ -1,16 +1,17 @@
 event = {
     "version": "2.0",
     "routeKey": "$default",
-    "rawPath": "/albums",
+    "path": "/albums/7zCODUHkfuRxsUjtuzNqbd",
     "rawQueryString": "",
     "cookies": [],
     "headers": {},
     "queryStringParameters": {
-        "Title": "untitled unmastered."
     },
     "requestContext": {},
     "body": "",
-    "pathParameters": {},
+    "pathParameters": {
+        "albumID": "7zCODUHkfuRxsUjtuzNqbd"
+    },
     "httpMethod": "GET",
     "isBase64Encoded": False,
     "stageVariables": {}

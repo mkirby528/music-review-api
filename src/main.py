@@ -6,11 +6,10 @@ import spotipy
 import src.constants as constants
 from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
-from datetime import date
-from datetime import datetime
 from src.utils.response_utils import format_response
 from src.utils.spotify import build_album_object
-from src.reviews.get_reviews import get_review_by_id, get_all_reviews
+from src.albums.get_albums import get_review_by_id, get_all_reviews
+import src.constants as constants
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
 
@@ -40,17 +39,18 @@ def lambda_handler(event, context):
     print(f"Query Paramaters: {query_params}")
     print(f"Body: {body}")
 
-    if method == "GET":
-        response = None
-        if path_paramaters and path_paramaters["albumID"]:
-            album_id = path_paramaters.get("albumID", "")
-            response = get_review_by_id(table, album_id)
-        else:
-            response = get_all_reviews(table, query_params)
-        if not response:
-            return format_response(404)
+    if method == "GET" and re.fullmatch(constants.GET_ALL_ALBUMS_PATH_REGEX, path):
+        print("Getting all album reviews")
+        response = get_all_reviews(table, query_params)
         return format_response(200, response)
-
+    if method == "GET" and re.fullmatch(constants.GET_ALBUM_BY_ID_PATH_REGEX, path):
+            print("Getting album review by album id")
+            album_id = path_paramaters.get("albumID", "")
+            if not album_id: 
+                return format_response(404, {})
+            response = get_review_by_id(table, album_id)
+            return format_response(200, response)
+    
     if method == "POST":
         album_item = json.loads(body)
         album_object = build_album_object(spotify, album_item)
