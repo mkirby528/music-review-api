@@ -1,18 +1,18 @@
 event = {
     "version": "2.0",
     "routeKey": "$default",
-    "path": "/albums/spotify/search",
+    "path": "/albums/abc123",
     "rawQueryString": "",
     "cookies": [],
     "headers": {},
     "queryStringParameters": {
-        "Title": "How to be a human being",
-        "Artist": "Glass Animals",
     },
     "requestContext": {},
     "body": "",
-    "pathParameters": {},
-    "httpMethod": "GET",
+    "pathParameters": {
+        "albumID": "abc123"
+    },
+    "httpMethod": "DELETE",
     "isBase64Encoded": False,
     "stageVariables": {}
 }

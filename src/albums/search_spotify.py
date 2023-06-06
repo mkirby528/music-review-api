@@ -1,7 +1,10 @@
+from urllib.parse import quote
+
+
 def search_album(spotipy_client, title, artist):
     print(f"Searching spotify with Title `{title}` and artist `{artist}`")
     query_string = f"{title} artist:{artist}"
-    print(query_string)
+    print('query string', query_string)
     response = []
     try:
         results = spotipy_client.search(

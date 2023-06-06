@@ -1,7 +1,6 @@
 import simplejson as json
 body = {
     "Rating": 10,
-    "HaveVinyl": True,
 }
 
 event = {
@@ -13,7 +12,7 @@ event = {
     "queryStringParameters": None,
     "multiValueQueryStringParameters": None,
     "pathParameters": {
-        "albumID": "3DGQ1iZ9XKUQxAUWjfC34w"
+        "albumID": "abc123"
     },
     "stageVariables": None,
     "requestContext": {},

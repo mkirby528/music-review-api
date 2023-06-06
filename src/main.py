@@ -9,7 +9,11 @@ from dotenv import load_dotenv
 from src.utils.response_utils import format_response
 from src.utils.spotify import build_album_object
 from src.albums.get_albums import get_review_by_id, get_all_reviews
-from src.albums.search_spotify import search_album, search_album_by_spotify_id
+from src.albums.search_spotify import search_album
+from src.albums.update_album import update_album, addVinylRecord
+from src.albums.add_album import add_album_to_db
+from urllib.parse import unquote
+
 import src.constants as constants
 if os.getenv("TABLE_NAME") is None:
     load_dotenv("./.env")
@@ -40,45 +44,42 @@ def lambda_handler(event, context):
     print(f"Query Paramaters: {query_params}")
     print(f"Body: {body}")
 
-    # /albums
+    # GET /albums
     if method == "GET" and re.fullmatch(constants.GET_ALL_ALBUMS_PATH_REGEX, path):
         print("Getting all album reviews")
         response = get_all_reviews(table, query_params)
         return format_response(200, response)
-    # /albums/:albumId
+    # GET /albums/:albumId
     if method == "GET" and re.fullmatch(constants.GET_ALBUM_BY_ID_PATH_REGEX, path):
         album_id = path_paramaters.get("albumID", "")
         if not album_id:
             return format_response(404, {})
         response = get_review_by_id(table, album_id)
         return format_response(200, response)
-     # /albums/spotfiy/search
+     # GET /albums/spotfiy/search
     if method == "GET" and re.fullmatch(constants.SPOTIFY_SEARCH_PATH_REGEX, path):
-        title = query_params.get("Title", "").strip()
-        artist = query_params.get("Artist", "").strip()
+        title = unquote(query_params.get("Title", "")).strip()
+        artist = unquote(query_params.get("Artist", "")).strip()
         response = search_album(spotify, title, artist)
         return format_response(200, response)
-
+     # GET /albums/
     if method == "POST":
         album_item = json.loads(body)
-        album_object = build_album_object(spotify, album_item)
-        print("================")
-        print(album_object)
-        print("================")
-        response = table.put_item(Item=album_object)
-        return format_response(201, response)
+        return format_response(201, add_album_to_db(table, album_item))
 
     if method == "PATCH":
         album_id = path_paramaters.get("albumID", "")
         if not album_id:
             return (400, "No albumID provided.")
-        if bool(re.search(constants.ADD_VINYL_PATH_REGEX, path)):
-            return format_response(200, addVinylRecord(album_id))
+        # PATCH /albums/:albumId/addVinyl
+        if bool(re.match(constants.ADD_VINYL_PATH_REGEX, path)):
+            return format_response(200, addVinylRecord(table, album_id))
+        # PATCH /albums/:albumId
         else:
             update_fields = json.loads(body)
-            album = update_album(album_id, update_fields)
-
+            album = update_album(table, album_id, update_fields)
             return format_response(200, album)
+
     if method == "DELETE":
         album_id = path_paramaters.get("albumID", "")
         if not album_id:
@@ -89,43 +90,3 @@ def lambda_handler(event, context):
             }
         )
         return format_response(200, response)
-
-
-def addVinylRecord(album_id):
-    album = update_album(album_id, {"HaveVinyl": True})
-    if album:
-        return True
-
-
-def create_album_record(album):
-    title = album["Title"]
-    artist = album["Artist"]
-    album["Type"] = "ALBUM"
-    album = add_album_metadata(album, title, artist)
-    #
-    return album
-
-
-def update_album(album_id, fields_to_update):
-    album = table.query(KeyConditionExpression=Key(
-        'id').eq(album_id))["Items"][0]
-    print(f"Updating album `{album['Title']}`... ")
-    print(f"Fields to update: {fields_to_update}")
-    update_expressions = []
-    expression_attribute_values = {}
-    count = 0
-    for field, value in fields_to_update.items():
-        if field not in album:
-            print(f"Field `{field}` not present on original object")
-            return False
-        update_expressions.append(f'{field}= :var{count}')
-        expression_attribute_values[f":var{count}"] = value
-        count += 1
-    return table.update_item(
-        Key={
-            'id': album_id
-        },
-        UpdateExpression="SET " + ",".join(update_expressions),
-        ExpressionAttributeValues=expression_attribute_values,
-        ReturnValues="ALL_NEW"
-    )
