@@ -26,7 +26,6 @@ def search_album(spotipy_client, title, artist):
                 "ReleaseDate": _try_parsing_date(spotify_album["release_date"]),
                 "ReleaseYear": _try_parsing_date(spotify_album["release_date"])[:4],
                 "DateListened": date.today().isoformat(),
-                "HaveVinyl": False,
                 "TYPE": "ALBUM",
                 "Tracks":  _get_album_tracks(spotipy_client, spotify_album["id"])
             }
