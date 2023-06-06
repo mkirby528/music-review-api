@@ -6,8 +6,8 @@ event = {
     "cookies": [],
     "headers": {},
     "queryStringParameters": {
-        "Title": "How to be a human being",
-        "Artist": "Glass Animals",
+        "Title": "Camp",
+        "Artist": "Childish Gambino",
     },
     "requestContext": {},
     "body": "",
