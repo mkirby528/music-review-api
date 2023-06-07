@@ -13,7 +13,7 @@ def search_album(spotipy_client, title, artist):
         for spotify_album in results["albums"]["items"]:
             album = {
                 "id": spotify_album["id"],
-                "Title": title,
+                "Title": spotify_album["name"],
                 "Artists": get_artists(spotify_album),
                 "ArtistsString": ", ".join(get_artists(spotify_album)),
                 "SpotifyURI": spotify_album["external_urls"]["spotify"],
