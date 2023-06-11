@@ -17,11 +17,7 @@ def search_album(spotipy_client, title, artist):
                 "Artists": get_artists(spotify_album),
                 "ArtistsString": ", ".join(get_artists(spotify_album)),
                 "SpotifyURI": spotify_album["external_urls"]["spotify"],
-                "Images": {
-                    "lg": spotify_album["images"][0]["url"],
-                    "md": spotify_album["images"][1]["url"],
-                    "sm": spotify_album["images"][2]["url"]
-                },
+                "CoverImage": spotify_album["images"][1]["url"],
                 "NumberOfTracks": spotify_album["total_tracks"],
                 "ReleaseDate": _try_parsing_date(spotify_album["release_date"]),
                 "ReleaseYear": _try_parsing_date(spotify_album["release_date"])[:4],
