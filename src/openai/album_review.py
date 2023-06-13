@@ -1,8 +1,11 @@
 import random
 import openai
+import os
 
 
 def generate_review(album: dict) -> str:
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+
     title = album["Title"]
     artist = album["ArtistsString"]
     rating = album["Rating"]
@@ -19,7 +22,7 @@ def generate_review(album: dict) -> str:
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "user", "content": f"Write a review for the album '{title}' by the artist '{artist}' \
+            {"role": "user", "content": f"Write a 125 word review for the album '{title}' by the artist '{artist}' \
                                         with a rating of {rating} out of 10 in the style of {style}. Include specific references \
                                         to the album and don't be afraid to use humor. \
                                         Begin straight into the review without a title."}
