@@ -4,3 +4,4 @@ datetime
 spotipy
 simplejson
 python-dotenv
+openai
