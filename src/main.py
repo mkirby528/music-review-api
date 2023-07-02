@@ -65,8 +65,8 @@ def lambda_handler(event, context):
      # POST /albums/
     if method == "POST":
         decoded_token = decode(headers["Authorization"])
-        print(decoded_token)
         album_item = json.loads(body)
+        album_item["ReviewerId"] = decoded_token["sub"]
         return format_response(201, add_album_to_db(table, album_item))
     if method == "PATCH":
         album_id = path_paramaters.get("albumID", "")
