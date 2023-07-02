@@ -64,7 +64,7 @@ def lambda_handler(event, context):
         return format_response(200, response)
      # POST /albums/
     if method == "POST":
-        decoded_token = load_decode(headers["Authorization"])
+        decoded_token = decode(headers["Authorization"])
         print(decoded_token)
         album_item = json.loads(body)
         return format_response(201, add_album_to_db(table, album_item))
