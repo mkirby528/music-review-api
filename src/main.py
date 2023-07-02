@@ -7,7 +7,6 @@ import src.constants as constants
 from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 from src.utils.response_utils import format_response
-from src.utils.spotify import build_album_object
 from src.albums.get_albums import get_review_by_id, get_all_reviews
 from src.albums.search_spotify import search_album
 from src.albums.update_album import update_album, addVinylRecord
