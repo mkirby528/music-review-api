@@ -7,6 +7,7 @@ import src.constants as constants
 from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 from src.utils.response_utils import format_response
+from src.utils.jwt import decode
 from src.albums.get_albums import get_review_by_id, get_all_reviews
 from src.albums.search_spotify import search_album
 from src.albums.update_album import update_album, addVinylRecord
@@ -61,11 +62,12 @@ def lambda_handler(event, context):
         artist = unquote(query_params.get("Artist", "")).strip()
         response = search_album(spotify, title, artist)
         return format_response(200, response)
-     # GET /albums/
+     # POST /albums/
     if method == "POST":
+        decoded_token = load_decode(headers["Authorization"])
+        print(decoded_token)
         album_item = json.loads(body)
         return format_response(201, add_album_to_db(table, album_item))
-
     if method == "PATCH":
         album_id = path_paramaters.get("albumID", "")
         if not album_id:
