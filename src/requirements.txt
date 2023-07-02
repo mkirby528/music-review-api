@@ -5,3 +5,4 @@ spotipy
 simplejson
 python-dotenv
 openai
+jwt
