@@ -1,3 +1,3 @@
 import jwt
-def decode(jwt):
-    return jwt.decode(jwt, options={"verify_signature": False})
+def decode(token):
+    return jwt.decode(token, options={"verify_signature": False})
