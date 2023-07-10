@@ -24,8 +24,10 @@ auth_manager = SpotifyClientCredentials()
 spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
 dynamodb_resource = boto3.resource("dynamodb")
 REVIEW_TABLE_NAME = os.environ["REVIEW_TABLE_NAME"]
-review_table = dynamodb_resource.Table(REVIEW_TABLE_NAME)
+USER_TABLE_NAME = os.environ["USER_TABLE_NAME"]
 
+review_table = dynamodb_resource.Table(REVIEW_TABLE_NAME)
+user_table = dynamodb_resource.Table(USER_TABLE_NAME)
 
 def lambda_handler(event, context):
     # Read and process request elements
@@ -100,5 +102,5 @@ def lambda_handler(event, context):
         print(user_id)
         if not user_id:
             return format_response(404, {})
-        response = get_user_by_id(review_table, user_id)
+        response = get_user_by_id(user_table, user_id)
         return format_response(200, response)
