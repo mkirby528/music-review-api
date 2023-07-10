@@ -1,7 +1,9 @@
 import json
 from src.main import lambda_handler
 # from events.add_album import event
-from events.get_by_id import event
+# from events.get_by_id import event
+from events.get_by_id_user import event
+
 # from events.get_all_albums import event
 # from events.update_album import event
 # from events.search_spotify import event
