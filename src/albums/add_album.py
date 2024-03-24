@@ -1,4 +1,4 @@
-from src.openai.album_review import generate_review
+# from src.openai.album_review import generate_review
 
 
 def add_album_to_db(table, album):
